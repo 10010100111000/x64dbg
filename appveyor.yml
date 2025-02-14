@@ -14,7 +14,7 @@ clone_folder: c:\projects\x64dbg
 
 install:
   - dir C:\Qt\5.6\msvc2013_64
-  - dir C:\Qt\5.6.3\msvc2013_64\mkspecs
+  - dir C:\Qt\5.6\msvc2013_64\mkspecs
   - git submodule update --init --recursive
 
 before_build:
