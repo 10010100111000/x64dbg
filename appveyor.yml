@@ -5,10 +5,12 @@ platform:
   - x64
 
 build:
-  steps:
-    - checkout
-    - vs2013:
-        solution: x64dbg.sln
-        configuration: Release
-        platform: x64
-        build_arguments: /p:PlatformToolset=v120
+  verbosity: normal
+  always_build: true
+  configure:
+    - cmd: vcvarsall.bat amd64
+    - cmd: msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
+
+test:
+  test_script:
+    - cmd: echo "No tests to run"
