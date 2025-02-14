@@ -14,10 +14,15 @@ environment:
 clone_folder: c:\projects\x64dbg
 
 install:
-  - dir "C:\Program Files (x86)\"
+  #- dir "C:\Program Files (x86)\"
+  
   - git submodule update --init --recursive
 
 before_build:
+  - dir C:\Qt\5.6.3\msvc2013_64\mkspecs\win32-msvc2013  # 检查 mkspecs 是否存在
+  - type C:\Qt\5.6.3\msvc2013_64\mkspecs\win32-msvc2013\qmake.conf  # 查看 qmake.conf 的内容
+  - set INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include;%INCLUDE%
+  - set LIB=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\lib\amd64;%LIB%
   - if exist bin rmdir /s /q bin  # 清理旧的构建目录
   - set PATH=C:\Qt\5.6\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
   - set PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\;%PATH% 
@@ -33,6 +38,7 @@ build_script:
   - echo Building Qt GUI...
   - cd src\gui
   - qmake x64dbg.pro -spec %QT_SPEC% -r CONFIG+=release  # 生成 Makefile
+  - type Makefile  # 查看 Makefile 的内容
   - nmake
   - cd ..\..
 
