@@ -31,7 +31,7 @@ build_script:
   - echo Building Qt GUI...
   - cd src\gui
   - qmake x64dbg.pro -spec %QT_SPEC% -r CONFIG+=release  # 生成 Makefile
-  -jom
+  - jom
   - cd ..\..
 
 after_build:
