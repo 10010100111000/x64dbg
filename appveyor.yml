@@ -47,7 +47,7 @@ after_build:
   - echo Listing all build outputs...
   - dir /s /b bin  # 列出所有生成的文件
 artifacts:
-  artifacts:
+
   # 主项目生成的文件
   - path: bin\x64\x64dbg.exe
     name: x64dbg.exe
