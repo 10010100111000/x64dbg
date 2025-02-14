@@ -21,6 +21,7 @@ before_build:
  
   - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64  # 加载 Vi
   - if exist bin rmdir /s /q bin  # 清理旧的构建目录
+  - dir C:\Qt\5.6\msvc2013_64\lib  # 检查 Qt 的 lib 目录是否存在
   - set PATH=C:\Qt\5.6\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
   #- set PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\;%PATH% 
   #- set PATH=%QT_BIN%;%PATH%  # 将 Qt 工具链添加到 PATH
@@ -37,37 +38,53 @@ build_script:
   - cd src\gui
   - qmake x64dbg.pro -spec %QT_SPEC% -r CONFIG+=release  # 生成 Makefile
   #- type Makefile  # 查看 Makefile 的内容
+  - echo %PATH%  # 检查 PATH 环境变量
+  - echo %LIB%  # 检查 LIB 环境变量
   - nmake
   - cd ..\..
 
 after_build:
   - echo Listing all build outputs...
   - dir /s /b bin  # 列出所有生成的文件
-  - dir /s /b src\gui  # 列出 Qt 项目生成的所有文件（用于捕获 Qt 项目输出）
 artifacts:
+  artifacts:
   # 主项目生成的文件
-  - path: bin\x64\Release\x64dbg.exe
+  - path: bin\x64\x64dbg.exe
     name: x64dbg.exe
-  - path: bin\x64\Release\x64dbg.dll
+  - path: bin\x64\x64dbg.dll
     name: x64dbg.dll
-  - path: bin\x64\Release\loaddll.exe
+  - path: bin\x64\loaddll.exe
     name: loaddll.exe
-  - path: bin\x64\Release\zydis_wrapper.lib
-    name: zydis_wrapper.lib
-  - path: bin\x64\Release\x64bridge.dll
+  - path: bin\x64\x64dbg.lib
+    name: x64dbg.lib
+  - path: bin\x64\x64bridge.dll
     name: x64bridge.dll
 
-# Qt 项目生成的所有文件
-  - path: src\gui\*.exe
-    name: Qt_Executables
-  - path: src\gui\*.dll
-    name: Qt_Libraries
-  - path: src\gui\*.lib
-    name: Qt_StaticLibraries
-  - path: src\gui\release\*  # 捕获 Qt 项目可能的生成文件
-    name: Qt_Release_Files
-  - path: src\gui\debug\*  # 如果生成了 debug 文件，捕获它们
-    name: Qt_Debug_Files
+  # Qt 项目生成的文件
+  - path: bin\x64\x64gui.dll
+    name: x64gui.dll
+  - path: bin\x64\x64gui.lib
+    name: x64gui.lib
+  - path: bin\x64\x64gui.exp
+    name: x64gui.exp
+
+  # 其他生成的文件
+  - path: bin\x64\x96dbg.exe
+    name: x96dbg.exe
+  - path: bin\x64\x64bridge.lib
+    name: x64bridge.lib
+  - path: bin\x64\x64dbg_exe.pdb
+    name: x64dbg_exe.pdb
+
+  # PDB 文件
+  - path: bin\x64\x64dbg.pdb
+    name: x64dbg.pdb
+  - path: bin\x64\x64bridge.pdb
+    name: x64bridge.pdb
+  - path: bin\x64\x64gui.pdb
+    name: x64gui.pdb
+  - path: bin\x64\loaddll.pdb
+    name: loaddll.pdb
 
   # 通配符匹配其他文件
   - path: bin\x64\*.exe
@@ -76,3 +93,4 @@ artifacts:
     name: x64_Libraries
   - path: bin\x64\*.lib
     name: x64_StaticLibraries
+
