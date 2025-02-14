@@ -238,7 +238,7 @@ static void HandleZydisOperand(const Zydis & zydis, int opindex, DISASM_ARGTYPE*
         *memorySize = op.size / 8;
         if(*memorySize <= memoryContentSize && DbgMemIsValidReadPtr(*value))
         {
-            MemRead(*value, memoryContent, max(op.size / 8, sizeof(duint)));
+            MemRead(*value, memoryContent, std::max(op.size / 8, (int)sizeof(duint)));
         }
     }
     break;
@@ -517,7 +517,8 @@ bool TraceRecordManager::enableTraceRecording(bool enabled, const char* fileName
                     size_t headerinfosize = strlen(headerinfo);
                     LARGE_INTEGER header;
                     DWORD written;
-                    header.LowPart = MAKEFOURCC('T', 'R', 'A', 'C');
+                    uint8_t TRAC[4] = { 'T', 'R', 'A', 'C' };
+                    memcpy(&header.LowPart, TRAC, sizeof(TRAC));
                     header.HighPart = (LONG)headerinfosize;
                     WriteFile(rtFile, &header, 8, &written, nullptr);
                     if(written < 8) //read-only?

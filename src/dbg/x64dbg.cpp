@@ -27,6 +27,7 @@
 #include "formatfunctions.h"
 #include "stringformat.h"
 #include "dbghelp_safe.h"
+#include <shellapi.h>
 
 static MESSAGE_STACK* gMsgStack = 0;
 static HANDLE hCommandLoopThread = 0;
@@ -163,6 +164,7 @@ static void registercommands()
     dbgcmdnew("EnableHardwareBreakpoint,bphe,bphwe", cbDebugEnableHardwareBreakpoint, true); //enable hardware breakpoint
     dbgcmdnew("DisableHardwareBreakpoint,bphd,bphwd", cbDebugDisableHardwareBreakpoint, true); //disable hardware breakpoint
     dbgcmdnew("SetMemoryBPX,membp,bpm", cbDebugSetMemoryBpx, true); //SetMemoryBPX
+    dbgcmdnew("SetMemoryRangeBPX,memrangebp,bpmrange", cbDebugSetMemoryRangeBpx, true); // SetMemoryRangeBpx
     dbgcmdnew("DeleteMemoryBPX,membpc,bpmc", cbDebugDeleteMemoryBreakpoint, true); //delete memory breakpoint
     dbgcmdnew("EnableMemoryBreakpoint,membpe,bpme", cbDebugEnableMemoryBreakpoint, true); //enable memory breakpoint
     dbgcmdnew("DisableMemoryBreakpoint,membpd,bpmd", cbDebugDisableMemoryBreakpoint, true); //enable memory breakpoint

@@ -150,7 +150,7 @@ private:
 \param loadall true on unload all.
 \return true if it succeeds, false if it fails.
 */
-bool pluginload(const char* pluginName)
+bool pluginload(const char* pluginName, bool loadall)
 {
     // No empty plugin names allowed
     if(pluginName == nullptr || *pluginName == '\0')
@@ -163,7 +163,8 @@ bool pluginload(const char* pluginName)
     // Obtain the actual plugin path.
     auto pluginPath = gPluginDirectory + L"\\" + StringUtils::Utf8ToUtf16(normalizedName);
     auto pluginSubPath = pluginPath + L"\\" + StringUtils::Utf8ToUtf16(normalizedName) + gPluginExtension;
-    if(PathFileExistsW(pluginSubPath.c_str()))
+    auto subdirPlugin = !!PathFileExistsW(pluginSubPath.c_str());
+    if(subdirPlugin)
     {
         // Plugin resides in a subdirectory
         pluginDirectory = pluginPath;
@@ -194,7 +195,7 @@ bool pluginload(const char* pluginName)
 
     // Set the working and DLL load directories
     ChangeDirectory cd(pluginDirectory.c_str());
-    DllDirectory dd(pluginDirectory == gPluginDirectory ? nullptr : pluginDirectory.c_str());
+    DllDirectory dd(loadall && !subdirPlugin ? nullptr : pluginDirectory.c_str());
 
     // Setup plugin data
     // NOTE: This is a global because during registration the plugin
@@ -530,7 +531,7 @@ void pluginloadall(const char* pluginDir)
     for(const std::wstring & pluginName : availablePlugins)
     {
         dprintf("[pluginload] %S\n", pluginName.c_str());
-        pluginload(StringUtils::Utf16ToUtf8(pluginName).c_str());
+        pluginload(StringUtils::Utf16ToUtf8(pluginName).c_str(), true);
     }
 
     // Remove the plugins directory after loading finished
