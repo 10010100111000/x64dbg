@@ -13,15 +13,12 @@ environment:
 clone_folder: c:\projects\x64dbg
 
 install:
-  - dir C:\Qt\5.6
-  - dir C:\Qt\5.6.3
-  - dir C:\Qt\5.6.3\msvc2013_64  # 列出 Qt 工具链目录
-  - dir C:\Qt\5.6.3\msvc2013  # 列出 32 位 Qt 工具链目录
+  - dir C:\Qt\5.6\msvc2013_64
   - git submodule update --init --recursive
 
 before_build:
   - if exist bin rmdir /s /q bin  # 清理旧的构建目录
-  - set PATH=C:\Qt\5.6.3\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
+  - set PATH=C:\Qt\5.6\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
   - qmake --version  # 验证 Qt 是否可用
 
 build_script:
