@@ -9,23 +9,21 @@ environment:
       PLATFORM: x64
       CONFIGURATION: Release
       QT_SPEC: win32-msvc2013   # Qt 的 spec 配置
-      QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
+      QT_BIN: C:\Qt\5.6\msvc2013_64\bin  # Qt 工具链路径
 
 clone_folder: c:\projects\x64dbg
 
 install:
   #- dir "C:\Program Files (x86)\"
-  
   - git submodule update --init --recursive
 
 before_build:
  
   - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64  # 加载 Vi
-  - set INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include;%INCLUDE%
-  - set LIB=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\lib\amd64;%LIB%
   - if exist bin rmdir /s /q bin  # 清理旧的构建目录
   - set PATH=C:\Qt\5.6\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
-  - set PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\;%PATH% 
+  #- set PATH=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\;%PATH% 
+  #- set PATH=%QT_BIN%;%PATH%  # 将 Qt 工具链添加到 PATH
   - qmake --version  # 验证 Qt 是否可用
   
 build_script:
@@ -38,7 +36,7 @@ build_script:
   - echo Building Qt GUI...
   - cd src\gui
   - qmake x64dbg.pro -spec %QT_SPEC% -r CONFIG+=release  # 生成 Makefile
-  - type Makefile  # 查看 Makefile 的内容
+  #- type Makefile  # 查看 Makefile 的内容
   - nmake
   - cd ..\..
 
