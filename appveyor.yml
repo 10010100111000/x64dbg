@@ -21,7 +21,7 @@ build_script:
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
 artifacts:
-  - path: bin\Win32\Release
+  - path: C:\projects\x64dbg\bin\Win32\Release\*
     name: Win32_Release
-  - path: bin\x64\Release
+  - path: C:\projects\x64dbg\bin\x64\Release\*
     name: x64_Release
