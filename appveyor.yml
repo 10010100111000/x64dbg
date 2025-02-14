@@ -1,39 +1,14 @@
 version: 1.0.{build}
-
-# 使用 AppVeyor 提供的 Visual Studio 2013 镜像
 image: Visual Studio 2013
 
 platform:
-  - x86
   - x64
 
-configuration:
-  - Release
-
-clone_folder: c:\projects\x64dbg
-
-install:
-  # 初始化 pre-commit formatting hooks
-  - cmd: cd c:\projects\x64dbg && github\format\install-git-hook.bat
-
-  # 复制依赖项
-  - cmd: cd c:\projects\x64dbg && setupdeps.bat
-
-build_script:
-  # 在 Visual Studio 2013 中构建解决方案
-  - msbuild x64dbg.sln /p:Configuration=Release /p:Platform=%PLATFORM%
-
-  # 在 Qt Creator 中构建 GUI
-  - cmd: |
-      set PATH=C:\Qt\qt-5.6.3-%PLATFORM%-msvc2013\bin;%PATH%
-      cd c:\projects\x64dbg\src\gui
-      qmake x64dbg.pro -spec win32-msvc2013
-      nmake release
-
-artifacts:
-  - path: bin\%PLATFORM%\Release
-    name: x64dbg_binaries
-
-test: off
-
-deploy: off
+build:
+  steps:
+    - checkout
+    - vs2013:
+        solution: x64dbg.sln
+        configuration: Release
+        platform: x64
+        build_arguments: /p:PlatformToolset=v120
