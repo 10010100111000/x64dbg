@@ -1,6 +1,6 @@
 version: 1.0.{build}
 
-image: Visual Studio 2013
+image: Visual Studio 2013  # 使用 Visual Studio 2013 镜像
 
 environment:
   matrix:
@@ -8,21 +8,57 @@ environment:
       PLATFORM: x64
       CONFIGURATION: Release
 
+  QT_VERSION: 5.6.3        # 指定 Qt 版本
+  QT_ARCH: x64             # 指定 64 位架构
+  QT_PATH: C:\Qt           # Qt 安装路径
+  QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
+  QMAKE_SPEC: win32-msvc2013  # 指定 qmake 的 spec
+
 clone_folder: c:\projects\x64dbg
 
 install:
+  # 安装 Qt 5.6.3 (x64, MSVC2013)
+  - ps: |
+      $url = "https://download.qt.io/archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013_64-5.6.3.exe"
+      $installer = "$env:TEMP\qt-installer.exe"
+      Invoke-WebRequest -Uri $url -OutFile $installer
+      Start-Process -FilePath $installer -ArgumentList "--script qt-installer-noninteractive.qs" -Wait
+  # 初始化 Git 子模块
   - git submodule update --init --recursive
+
 before_build:
+  # 设置 Qt 环境变量
+  - set PATH=%QT_BIN%;%PATH%
+  - qmake --version  # 验证 qmake 是否可用
+  # 删除之前的构建输出
   - if exist bin rmdir /s /q bin
+
 build_script:
+  # 使用 Qt 构建 GUI 项目
+  - cd src\gui
+  - qmake x64dbg.pro -spec %QMAKE_SPEC% -r CONFIG+=release
+  - nmake
+
+  # 使用 Visual Studio 构建主项目
+  - cd c:\projects\x64dbg
   - echo Building DBG for %ARCH%...
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
+
 after_build:
+  # 列出生成的文件
   - dir /s /b bin
+  - dir /s /b src\gui\release
+
 artifacts:
+  # 打包 Qt GUI 生成的可执行文件
+  - path: src\gui\release\x64dbg.exe
+    name: x64dbg_gui
+  # 打包主项目生成的可执行文件
   - path: bin\x64\*.exe
     name: x64_Executables
+  # 打包主项目生成的动态库
   - path: bin\x64\*.dll
     name: x64_Libraries
+  # 打包主项目生成的静态库
   - path: bin\x64\*.lib
     name: x64_StaticLibraries
