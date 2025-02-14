@@ -6,5 +6,5 @@ platform:
 
 build:
   verbosity: normal
-  script:
+  commands:
     - msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
