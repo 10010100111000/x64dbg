@@ -1,0 +1,78 @@
+version: 1.0.{build}
+
+image: Visual Studio 2013
+
+branches:
+  only:
+    - development
+
+environment:
+  matrix:
+    - VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    - QTDIR_X86: "C:\\Qt\\qt-5.6.3-x86-msvc2013"
+    - QTDIR_X64: "C:\\Qt\\qt-5.6.3-x64-msvc2013"
+    - QT_CREATOR: "C:\\Qt\\qtcreator-4.3.1"
+    - CMAKE: "C:\\Program Files\\CMake\\bin\\cmake.exe"
+    - SDK_DIR: "C:\\Program Files (x86)\\Windows Kits\\10"
+    - GIT_HOOKS_DIR: "C:\\path\\to\\x64dbg\\github\\format"
+
+install:
+  # Install Visual Studio 2013
+  - cmd: |
+      echo "Installing Visual Studio 2013..."
+      start /wait /d "C:\\path\\to\\your\\iso" setup.exe /quiet /norestart
+  # Install Qt 5.6.3 (x86) and (x64)
+  - cmd: |
+      echo "Installing Qt 5.6.3 (x86) for MSVC2013..."
+      start /wait "C:\\path\\to\\qt-installer-x86.exe" /S /D=C:\Qt\qt-5.6.3-x86-msvc2013
+  - cmd: |
+      echo "Installing Qt 5.6.3 (x64) for MSVC2013..."
+      start /wait "C:\\path\\to\\qt-installer-x64.exe" /S /D=C:\Qt\qt-5.6.3-x64-msvc2013
+  # Install Qt Creator
+  - cmd: |
+      echo "Installing Qt Creator 4.3.1..."
+      start /wait "C:\\path\\to\\qtcreator-installer.exe" /S /D=C:\Qt\qtcreator-4.3.1
+  # Install CMake
+  - cmd: |
+      echo "Installing CMake..."
+      start /wait "C:\\path\\to\\cmake-installer.exe" /S /D=C:\Program Files\CMake
+  # Install Windows SDK
+  - cmd: |
+      echo "Installing Windows SDK..."
+      start /wait "C:\\path\\to\\sdk-installer.exe" /S /D=C:\Program Files (x86)\Windows Kits\10
+  # Clone repository with submodules
+  - git clone --recurse-submodules -b development https://github.com/x64dbg/x64dbg.git
+
+  # Run pre-commit formatting hook installer
+  - cmd: |
+      echo "Running pre-commit formatting hook..."
+      start /wait "C:\\path\\to\\x64dbg\\github\\format\\install-git-hook.bat"
+
+  # Run setupdeps.bat to copy dependencies
+  - cmd: |
+      echo "Running setupdeps.bat to copy dependencies..."
+      start /wait "C:\\path\\to\\x64dbg\\setupdeps.bat"
+
+build:
+  # Compile the solution in Visual Studio 2013 (Release mode)
+  - cmd: |
+      echo "Opening and building x64dbg.sln in Visual Studio 2013..."
+      call "%VCVARS%" && MSBuild "x64dbg\\x64dbg.sln" /p:Configuration=Release /p:Platform=x64
+
+  # Open and compile GUI in Qt Creator (Release mode)
+  - cmd: |
+      echo "Opening and building GUI in Qt Creator..."
+      start "" "C:\\Qt\\qtcreator-4.3.1\\bin\\qtcreator.exe" "x64dbg\\src\\gui\\x64dbg.pro" -r
+
+test:
+  # Verify the build output (both x64dbg.exe and GUI)
+  - cmd: |
+      if exist "x64dbg\\Release\\x64dbg.exe" exit 0
+      else exit 1
+  - cmd: |
+      if exist "x64dbg\\src\\gui\\Release\\x64dbg.exe" exit 0
+      else exit 1
+
+artifacts:
+  - x64dbg\\Release\\x64dbg.exe
+  - x64dbg\\src\\gui\\Release\\x64dbg.exe
