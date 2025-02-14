@@ -6,7 +6,6 @@ platform:
 
 build:
   verbosity: normal
-  always_build: true
   configure:
     - cmd: vcvarsall.bat amd64
     - cmd: msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
