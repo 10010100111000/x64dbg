@@ -7,13 +7,14 @@ environment:
     - ARCH: x64
       PLATFORM: x64
       CONFIGURATION: Release
-      QT_SPEC: win64-msvc2013  # Qt 的 spec 配置
+      QT_SPEC: win32-msvc2013   # Qt 的 spec 配置
       QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
 
 clone_folder: c:\projects\x64dbg
 
 install:
   - dir C:\Qt\5.6\msvc2013_64
+  - dir C:\Qt\5.6.3\msvc2013_64\mkspecs
   - git submodule update --init --recursive
 
 before_build:
