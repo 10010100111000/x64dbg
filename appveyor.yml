@@ -3,6 +3,7 @@ version: 1.0.{build}
 image: Visual Studio 2013
 
 environment:
+  INCLUDE: 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include;%INCLUDE%'
   matrix:
     - ARCH: x64
       PLATFORM: x64
@@ -13,7 +14,7 @@ environment:
 clone_folder: c:\projects\x64dbg
 
 install:
-  - dir C:\
+  - dir C:\Program Files (x86)
   - git submodule update --init --recursive
 
 before_build:
