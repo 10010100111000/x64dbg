@@ -6,11 +6,5 @@ platform:
 
 build:
   verbosity: normal
-  steps:
-    - checkout
-    - cmd: msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
-
-test:
-  test_script:
-    - cmd: echo "No tests to run"
-
+  script:
+    - msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
