@@ -3,7 +3,7 @@ version: 1.0.{build}
 image: Visual Studio 2013
 
 environment:
-  INCLUDE: 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include;%INCLUDE%'
+
   matrix:
     - ARCH: x64
       PLATFORM: x64
