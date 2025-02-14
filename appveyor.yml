@@ -2,12 +2,14 @@ version: 1.0.{build}
 
 image: Visual Studio 2013
 
-platform:
-  - x86
-  - x64
-
-configuration:
-  - Release
+environment:
+  matrix:
+    - ARCH: x32
+      PLATFORM: Win32
+      CONFIGURATION: Release
+    - ARCH: x64
+      PLATFORM: x64
+      CONFIGURATION: Release
 
 clone_folder: c:\projects\x64dbg
 
@@ -15,10 +17,11 @@ install:
   - git submodule update --init --recursive
 
 build_script:
-  - msbuild x64dbg.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
+  - echo Building DBG for %ARCH%...
+  - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
 artifacts:
+  - path: bin\Win32\Release
+    name: Win32_Release
   - path: bin\x64\Release
     name: x64_Release
-  - path: bin\x32\Release
-    name: x32_Release
