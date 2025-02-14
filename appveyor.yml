@@ -1,4 +1,28 @@
 version: 1.0.{build}
+
+image: Visual Studio 2013
+
+environment:
+  type: "Release"  # 你可以根据需要更改为 "Debug"
+
+platform:
+  - x86
+  - x64
+
+configuration:
+  - Release
+  - Debug
+
+build_script:
+  - msbuild.exe x64dbg.sln /m:1 /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
+
+artifacts:
+  - path: '**\$(Configuration)\$(Platform)\*.exe'
+    name: x64dbg
+
+test: off
+
+deploy: offversion: 1.0.{build}
 image: Visual Studio 2013
 
 platform:
