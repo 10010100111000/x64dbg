@@ -17,7 +17,7 @@ before_build:
 build_script:
   - echo Building DBG for %ARCH%...
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
-  after_build:
+after_build:
   - dir /s /b bin
 artifacts:
   - path: bin\x64\*.exe
