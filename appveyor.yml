@@ -13,7 +13,7 @@ environment:
 clone_folder: c:\projects\x64dbg
 
 install:
-  -dir C:\Qt\5.6.3
+  - dir C:\Qt\5.6.3
   - dir C:\Qt\5.6.3\msvc2013_64  # 列出 Qt 工具链目录
   - dir C:\Qt\5.6.3\msvc2013  # 列出 32 位 Qt 工具链目录
   - git submodule update --init --recursive
