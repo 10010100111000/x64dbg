@@ -1,70 +1,62 @@
 version: 1.0.{build}
 
-image: Visual Studio 2013  # 使用 Visual Studio 2013 镜像
+image: Visual Studio 2013
 
 environment:
   matrix:
     - ARCH: x64
       PLATFORM: x64
       CONFIGURATION: Release
-
-  QT_VERSION: 5.6.3        # 指定 Qt 版本
-  QT_ARCH: x64             # 指定 64 位架构
-  QT_PATH: C:\Qt           # Qt 安装路径
-  QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
-  QMAKE_SPEC: win32-msvc2013  # 指定 qmake 的 spec
+      QT_SPEC: win32-msvc2013  # Qt 的 spec 配置
+      QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
 
 clone_folder: c:\projects\x64dbg
 
 install:
-  # 安装 Qt 5.6.3 (x64, MSVC2013)
-  - ps: |
-      $url = "https://download.qt.io/new_archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013_64-5.6.3.exe"
-      $installer = "$env:TEMP\qt-installer.exe"
-      Invoke-WebRequest -Uri $url -OutFile $installer
-      if (Test-Path $installer) {
-          Write-Host "Qt installer downloaded successfully."
-      } else {
-          Write-Host "Failed to download Qt installer."
-          exit 1
-      }
-      Start-Process -FilePath $installer -ArgumentList "--script qt-installer-noninteractive.qs" -Wait
-  # 初始化 Git 子模块
   - git submodule update --init --recursive
 
 before_build:
-  # 设置 Qt 环境变量
-  - set PATH=%QT_BIN%;%PATH%
-  - qmake --version  # 验证 qmake 是否可用
-  # 删除之前的构建输出
-  - if exist bin rmdir /s /q bin
+  - if exist bin rmdir /s /q bin  # 清理旧的构建目录
+  - set PATH=%QT_BIN%;%PATH%  # 将 Qt 工具链添加到 PATH
+  - qmake --version  # 验证 Qt 是否可用
 
 build_script:
-  # 使用 Qt 构建 GUI 项目
-  - cd src\gui
-  - qmake x64dbg.pro -spec %QMAKE_SPEC% -r CONFIG+=release
-  - nmake
-
-  # 使用 Visual Studio 构建主项目
-  - cd c:\projects\x64dbg
+  # 1. 构建主项目（非 Qt 部分）
   - echo Building DBG for %ARCH%...
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
+  # 2. 构建 Qt 项目（src\gui\x64dbg.pro）
+  - echo Building Qt GUI...
+  - cd src\gui
+  - qmake x64dbg.pro -spec %QT_SPEC% -r CONFIG+=release  # 生成 Makefile
+  - nmake  # 编译 Qt 项目
+  - cd ..\..
+
 after_build:
-  # 列出生成的文件
-  - dir /s /b bin
-  - dir /s /b src\gui\release
+  - echo Listing all build outputs...
+  - dir /s /b bin  # 列出所有生成的文件
 
 artifacts:
-  # 打包 Qt GUI 生成的可执行文件
-  - path: src\gui\release\x64dbg.exe
-    name: x64dbg_gui
-  # 打包主项目生成的可执行文件
+  # 主项目生成的文件
+  - path: bin\x64\Release\x64dbg.exe
+    name: x64dbg.exe
+  - path: bin\x64\Release\x64dbg.dll
+    name: x64dbg.dll
+  - path: bin\x64\Release\loaddll.exe
+    name: loaddll.exe
+  - path: bin\x64\Release\zydis_wrapper.lib
+    name: zydis_wrapper.lib
+  - path: bin\x64\Release\x64bridge.dll
+    name: x64bridge.dll
+
+  # Qt 项目生成的文件（假设生成到 src\gui\release）
+  - path: src\gui\release\x64dbg_gui.exe  # 替换为实际生成的 Qt 可执行文件名
+    name: x64dbg_gui.exe
+
+  # 通配符匹配其他文件
   - path: bin\x64\*.exe
     name: x64_Executables
-  # 打包主项目生成的动态库
   - path: bin\x64\*.dll
     name: x64_Libraries
-  # 打包主项目生成的静态库
   - path: bin\x64\*.lib
     name: x64_StaticLibraries
