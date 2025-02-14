@@ -12,20 +12,17 @@ clone_folder: c:\projects\x64dbg
 
 install:
   - git submodule update --init --recursive
-
+before_build:
+  - if exist bin rmdir /s /q bin
 build_script:
   - echo Building DBG for %ARCH%...
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
-  - echo "Checking if output directory exists..."
-  - dir bin\x64\Release
+  after_build:
+  - dir /s /b bin
 artifacts:
-  - path: bin\x64\Release\x64dbg.exe
-    name: x64dbg.exe
-  - path: bin\x64\Release\x64dbg.dll
-    name: x64dbg.dll
-  - path: bin\x64\Release\loaddll.exe
-    name: loaddll.exe
-  - path: bin\x64\Release\zydis_wrapper.lib
-    name: zydis_wrapper.lib
-  - path: bin\x64\Release\x64bridge.dll
-    name: x64bridge.dll
+  - path: bin\x64\*.exe
+    name: x64_Executables
+  - path: bin\x64\*.dll
+    name: x64_Libraries
+  - path: bin\x64\*.lib
+    name: x64_StaticLibraries
