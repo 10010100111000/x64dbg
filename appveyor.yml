@@ -19,7 +19,7 @@ clone_folder: c:\projects\x64dbg
 install:
   # 安装 Qt 5.6.3 (x64, MSVC2013)
   - ps: |
-      $url = "https://download.qt.io/archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013_64-5.6.3.exe"
+      $url = "https://download.qt.io/new_archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013_64-5.6.3.exe"
       $installer = "$env:TEMP\qt-installer.exe"
       Invoke-WebRequest -Uri $url -OutFile $installer
       Start-Process -FilePath $installer -ArgumentList "--script qt-installer-noninteractive.qs" -Wait
