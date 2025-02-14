@@ -4,9 +4,6 @@ image: Visual Studio 2013
 
 environment:
   matrix:
-    - ARCH: x32
-      PLATFORM: Win32
-      CONFIGURATION: Release
     - ARCH: x64
       PLATFORM: x64
       CONFIGURATION: Release
@@ -21,7 +18,5 @@ build_script:
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
 artifacts:
-  - path: C:\projects\x64dbg\bin\Win32\Release\*
-    name: Win32_Release
-  - path: C:\projects\x64dbg\bin\x64\Release\*
+  - path: bin\x64\Release\*
     name: x64_Release
