@@ -1,5 +1,6 @@
 version: 1.0.{build}
 
+# 使用 AppVeyor 提供的 Visual Studio 2013 镜像
 image: Visual Studio 2013
 
 platform:
@@ -12,60 +13,6 @@ configuration:
 clone_folder: c:\projects\x64dbg
 
 install:
-  # 安装 Visual Studio 2013 和 MFC
-  - ps: |
-      $vs2013Url = "https://download.microsoft.com/download/9/3/E/93EA6A59-09A5-4F8C-8855-5B657227B5D3/en_visual_studio_ultimate_2013_with_update_5_x86_dvd_6815896.iso"
-      $vs2013Iso = "$env:TEMP\vs2013.iso"
-      Invoke-WebRequest -Uri $vs2013Url -OutFile $vs2013Iso
-      Mount-DiskImage -ImagePath $vs2013Iso
-      $driveLetter = (Get-DiskImage -ImagePath $vs2013Iso | Get-Volume).DriveLetter
-      Start-Process -FilePath "$driveLetter\vs_ultimate.exe" -ArgumentList "/quiet /norestart" -Wait
-      Dismount-DiskImage -ImagePath $vs2013Iso
-      Remove-Item -Path $vs2013Iso
-
-  # 安装 Qt 5.6.3 (x86) for MSVC2013
-  - ps: |
-      $qtX86Url = "https://download.qt.io/archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013-5.6.3.exe"
-      $qtX86Installer = "$env:TEMP\qt-5.6.3-x86-msvc2013.exe"
-      Invoke-WebRequest -Uri $qtX86Url -OutFile $qtX86Installer
-      Start-Process -FilePath $qtX86Installer -ArgumentList "--script=C:\projects\x64dbg\qt-installer-noninteractive.qs" -Wait
-      Remove-Item -Path $qtX86Installer
-
-  # 安装 Qt 5.6.3 (x64) for MSVC2013
-  - ps: |
-      $qtX64Url = "https://download.qt.io/archive/qt/5.6/5.6.3/qt-opensource-windows-x86-msvc2013-5.6.3.exe"
-      $qtX64Installer = "$env:TEMP\qt-5.6.3-x64-msvc2013.exe"
-      Invoke-WebRequest -Uri $qtX64Url -OutFile $qtX64Installer
-      Start-Process -FilePath $qtX64Installer -ArgumentList "--script=C:\projects\x64dbg\qt-installer-noninteractive.qs" -Wait
-      Remove-Item -Path $qtX64Installer
-
-  # 安装 Qt Creator 4.3.1
-  - ps: |
-      $qtCreatorUrl = "https://download.qt.io/official_releases/qtcreator/4.3/4.3.1/qt-creator-opensource-windows-x86-4.3.1.exe"
-      $qtCreatorInstaller = "$env:TEMP\qt-creator-4.3.1.exe"
-      Invoke-WebRequest -Uri $qtCreatorUrl -OutFile $qtCreatorInstaller
-      Start-Process -FilePath $qtCreatorInstaller -ArgumentList "--script=C:\projects\x64dbg\qt-installer-noninteractive.qs" -Wait
-      Remove-Item -Path $qtCreatorInstaller
-
-  # 安装 CMake
-  - ps: |
-      $cmakeUrl = "https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2-windows-x86_64.msi"
-      $cmakeInstaller = "$env:TEMP\cmake-3.20.2-windows-x86_64.msi"
-      Invoke-WebRequest -Uri $cmakeUrl -OutFile $cmakeInstaller
-      Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $cmakeInstaller /quiet /norestart" -Wait
-      Remove-Item -Path $cmakeInstaller
-
-  # 安装 Windows SDK
-  - ps: |
-      $sdkUrl = "https://download.microsoft.com/download/F/1/3/F1300C9C-A120-4341-90DF-8A52509B23AC/windowssdk/winsdksetup.exe"
-      $sdkInstaller = "$env:TEMP\winsdksetup.exe"
-      Invoke-WebRequest -Uri $sdkUrl -OutFile $sdkInstaller
-      Start-Process -FilePath $sdkInstaller -ArgumentList "/quiet /norestart" -Wait
-      Remove-Item -Path $sdkInstaller
-
-  # 克隆 X64Dbg 仓库及其子模块
-  - git clone --recurse-submodules -b development https://github.com/x64dbg/x64dbg.git c:\projects\x64dbg
-
   # 初始化 pre-commit formatting hooks
   - cmd: cd c:\projects\x64dbg && github\format\install-git-hook.bat
 
