@@ -7,17 +7,19 @@ environment:
     - ARCH: x64
       PLATFORM: x64
       CONFIGURATION: Release
-      QT_SPEC: win32-msvc2013  # Qt 的 spec 配置
+      QT_SPEC: win64-msvc2013  # Qt 的 spec 配置
       QT_BIN: C:\Qt\5.6.3\msvc2013_64\bin  # Qt 工具链路径
 
 clone_folder: c:\projects\x64dbg
 
 install:
+  - dir C:\Qt\5.6.3\msvc2013_64\bin  # 列出 Qt 工具链目录
+  - dir C:\Qt\5.6.3\msvc2013\bin  # 列出 32 位 Qt 工具链目录
   - git submodule update --init --recursive
 
 before_build:
   - if exist bin rmdir /s /q bin  # 清理旧的构建目录
-  - set PATH=%QT_BIN%;%PATH%  # 将 Qt 工具链添加到 PATH
+  - set PATH=C:\Qt\5.6.3\msvc2013_64\bin;%PATH%  # 将 Qt 工具链添加到 PATH
   - qmake --version  # 验证 Qt 是否可用
 
 build_script:
@@ -35,7 +37,7 @@ build_script:
 after_build:
   - echo Listing all build outputs...
   - dir /s /b bin  # 列出所有生成的文件
-
+  - dir /s /b src\gui  # 列出 Qt 项目生成的所有文件（用于捕获 Qt 项目输出）
 artifacts:
   # 主项目生成的文件
   - path: bin\x64\Release\x64dbg.exe
@@ -49,9 +51,17 @@ artifacts:
   - path: bin\x64\Release\x64bridge.dll
     name: x64bridge.dll
 
-  # Qt 项目生成的文件（假设生成到 src\gui\release）
-  - path: src\gui\release\x64dbg_gui.exe  # 替换为实际生成的 Qt 可执行文件名
-    name: x64dbg_gui.exe
+# Qt 项目生成的所有文件
+  - path: src\gui\*.exe
+    name: Qt_Executables
+  - path: src\gui\*.dll
+    name: Qt_Libraries
+  - path: src\gui\*.lib
+    name: Qt_StaticLibraries
+  - path: src\gui\release\*  # 捕获 Qt 项目可能的生成文件
+    name: Qt_Release_Files
+  - path: src\gui\debug\*  # 如果生成了 debug 文件，捕获它们
+    name: Qt_Debug_Files
 
   # 通配符匹配其他文件
   - path: bin\x64\*.exe
