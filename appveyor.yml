@@ -7,4 +7,9 @@ platform:
 build:
   verbosity: normal
   commands:
+    - call "%VS120COMNTOOLS%\vsvars32.bat"
     - msbuild x64dbg.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v120
+
+test:
+  test_script:
+    - cmd: echo "No tests to run"
