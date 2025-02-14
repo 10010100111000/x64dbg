@@ -26,6 +26,7 @@ before_build:
 build_script:
   # 1. 构建主项目（非 Qt 部分）
   - echo Building DBG for %ARCH%...
+  - set INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include;%INCLUDE%
   - msbuild.exe x64dbg.sln /m /verbosity:minimal /t:Rebuild /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
   # 2. 构建 Qt 项目（src\gui\x64dbg.pro）
